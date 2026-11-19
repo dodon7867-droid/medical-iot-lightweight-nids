@@ -1,0 +1,13 @@
+# dataset (download separately, see data/README.md)
+data/*.csv
+data/*.zip
+
+# generated
+outputs/
+c/X.bin
+c/y_*.bin
+c/check_T*
+c/*.o
+__pycache__/
+*.pyc
+.DS_Store
