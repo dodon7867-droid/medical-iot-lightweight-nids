@@ -38,6 +38,9 @@ run_all.sh                  runs everything in order
 
 ## How to run
 
+Requires Python 3.12 or newer (the pinned numpy 2.5 does not install on older versions),
+a C compiler and `make`. On Windows, use WSL2 with Ubuntu 24.04.
+
 ```bash
 pip install -r requirements.txt
 # download MedSec-25.csv into data/ (see data/README.md)
