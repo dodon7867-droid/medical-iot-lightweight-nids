@@ -1,0 +1,10 @@
+              total        used        free      shared  buff/cache   available
+Mem:         107964       34220       54748         220       18996       39228
+Swap:             0           0           0
+Filesystem                Size      Used Available Use% Mounted on
+/dev/root                98.3M     23.8M     72.4M  25% /
+Mem: 53268K used, 54696K free, 220K shrd, 1136K buff, 14608K cached
+CPU:   0% usr   0% sys   0% nic 100% idle   0% io   0% irq   0% sirq
+Load average: 0.00 0.00 0.00 2/82 4052
+  PID  PPID USER     STAT   VSZ %VSZ %CPU COMMAND
+ 2422     1 root     S     2260   2%   0% {ntpd} /sbin/ujail -t 5 -n ntpd -U ntp -G ntp -C /etc/capabilities/ntpd.json -c -u -r /bin/ubus -r /usr/bin/env -r /usr/bin/jshn -r /usr/sbin/ntpd-hotplug -r /usr/share/libubox/jshn.sh -- /usr/sbin/ntpd -n -N -S /usr/sbin/ntpd-hotplug -p 0.openwrt.pool.ntp.org -p 1.openwrt.pool.ntp.org -p 2.openwrt.pool.ntp.org -p 3.openwrt.pool.ntp.org

@@ -1,0 +1,50 @@
+config defaults
+    option input 'REJECT'
+    option output 'ACCEPT'
+    option forward 'REJECT'
+    option synflood_protect '1'
+
+config zone
+    option name 'inside'
+    list network 'admin'
+    list network 'cctv'
+    list network 'clinic'
+    list network 'monitor'
+    option input 'ACCEPT'
+    option output 'ACCEPT'
+    option forward 'ACCEPT'
+
+config zone
+    option name 'wan'
+    list network 'wan'
+    option input 'REJECT'
+    option output 'ACCEPT'
+    option forward 'REJECT'
+    option masq '0'
+
+config zone
+    option name 'mgmt'
+    list network 'mgmt'
+    option input 'REJECT'
+    option output 'ACCEPT'
+    option forward 'REJECT'
+
+config forwarding
+    option src 'inside'
+    option dest 'wan'
+
+config rule
+    option name 'camera-exposed'
+    option src 'wan'
+    option dest 'inside'
+    option dest_ip '10.0.30.21'
+    option proto 'tcp'
+    option dest_port '21 23 80'
+    option target 'ACCEPT'
+
+config rule
+    option name 'mgmt-web-ssh'
+    option src 'mgmt'
+    option proto 'tcp'
+    option dest_port '22 80'
+    option target 'ACCEPT'
