@@ -1,0 +1,54 @@
+[INV] rows 554534 cols 84
+[INV] feature cols 77
+[INV] non-numeric []
+[INV] constant 10 ['Fwd PSH Flags', 'Fwd URG Flags', 'Fwd Byts/b Avg', 'Fwd Pkts/b Avg', 'Fwd Blk Rate Avg', 'Bwd Byts/b Avg', 'Bwd Pkts/b Avg', 'Bwd Blk Rate Avg', 'Init Fwd Win Byts', 'Fwd Seg Size Min']
+[INV] inf {}
+[INV] nan {}
+[INV] negative {'Flow Duration': 55, 'Flow Byts/s': 11, 'Flow Pkts/s': 55, 'Flow IAT Mean': 55, 'Flow IAT Max': 45, 'Flow IAT Min': 374, 'Fwd IAT Min': 11, 'Bwd IAT Tot': 60, 'Bwd IAT Mean': 60, 'Bwd IAT Max': 53, 'Bwd IAT Min': 87, 'Init Fwd Win Byts': 554534, 'Init Bwd Win Byts': 7301}
+[INV] duplicate full rows 0
+[INV] label counts {'Reconnaissance': 401683, 'Initial access': 102090, 'Exfiltration': 25915, 'Lateral movement': 12498, 'Benign': 12348}
+[INV] protocol counts {6: 547233, 17: 5813, 0: 1488}
+[RELABEL] lateral pivot->external kept benign (exception) 0
+[CLEAN] negative-time rows 374 by y {'Initial access': 166, 'Reconnaissance': 134, 'Benign': 71, 'Exfiltration': 3}
+[RELABEL] drop protocol0 1488 attacker-bg 385
+[TS] NaT 0 range 2022-05-31 00:36:00 2025-04-24 16:12:27
+[WIN] done 1s
+[CLEAN] drop attacker-bg 385 drop negative-time 370
+[DATA] after drops 552291
+y                 Benign  Exfiltration  Initial access  Lateral movement  Reconnaissance
+cap                                                                                     
+Benign             11282             0               0                 0               0
+Exfiltration        6993         18792               0                 0               0
+Initial access      4148             0           97638                 0               0
+Lateral movement   11193             0               0              1046               0
+Reconnaissance      9587             0               0                 0          391612
+[SPLIT] train 386609 test 165682
+[SPLIT] test per class {'Reconnaissance': 117483, 'Initial access': 29291, 'Benign': 12958, 'Exfiltration': 5637, 'Lateral movement': 313}
+[FEAT] constant after cleaning 10 ['Fwd PSH Flags', 'Fwd URG Flags', 'Fwd Byts/b Avg', 'Fwd Pkts/b Avg', 'Fwd Blk Rate Avg', 'Bwd Byts/b Avg', 'Bwd Pkts/b Avg', 'Bwd Blk Rate Avg', 'Init Fwd Win Byts', 'Fwd Seg Size Min']
+[FEAT] identity removed ['Protocol', 'Init Bwd Win Byts'] -> FULL 65
+[FEAT] LIGHT 28 missing/const []
+[LOAD] done 10s
+T3 importance order ['w60_dports', 'w10_flows', 'Flow IAT Min', 'Fwd IAT Min', 'Pkt Len Mean', 'Pkt Len Max', 'Flow Duration', 'Flow IAT Mean', 'SYN Flag Cnt', 'Flow Pkts/s', 'Fwd Pkt Len Max', 'Fwd Pkt Len Mean', 'w60_flows', 'Fwd Pkt Len Min', 'Bwd Header Len', 'Bwd IAT Min', 'Fwd Header Len', 'Flow IAT Max', 'w60_dsts', 'Bwd Pkt Len Mean', 'ACK Flag Cnt', 'Pkt Len Min', 'Tot Bwd Pkts']
+[k=6] T1: macroF1=0.988 recall=0.9997 FPR=0.0333 nodes=61
+[k=6] T2: macroF1=0.992 recall=1.0000 FPR=0.0003 nodes=25
+[k=6] T3: macroF1=0.866 recall=0.9962 FPR=0.0682 nodes=205 lateralF1=0.392 pwF1=0.998
+[k=6] union FPR=0.1016 false_alerts=27 | within-set max|rho|=0.999 pairs>=0.9=1
+[k=8] T1: macroF1=0.994 recall=0.9993 FPR=0.0146 nodes=69
+[k=8] T2: macroF1=0.994 recall=1.0000 FPR=0.0002 nodes=25
+[k=8] T3: macroF1=0.862 recall=0.9980 FPR=0.0668 nodes=183 lateralF1=0.378 pwF1=0.998
+[k=8] union FPR=0.0810 false_alerts=26 | within-set max|rho|=0.999 pairs>=0.9=2
+[k=10] T1: macroF1=0.994 recall=0.9992 FPR=0.0147 nodes=73
+[k=10] T2: macroF1=0.996 recall=1.0000 FPR=0.0002 nodes=27
+[k=10] T3: macroF1=0.903 recall=0.9977 FPR=0.0230 nodes=177 lateralF1=0.564 pwF1=0.998
+[k=10] union FPR=0.0374 false_alerts=15 | within-set max|rho|=0.999 pairs>=0.9=4
+[k=12] T1: macroF1=0.999 recall=1.0000 FPR=0.0017 nodes=65
+[k=12] T2: macroF1=0.996 recall=1.0000 FPR=0.0002 nodes=27
+[k=12] T3: macroF1=0.918 recall=0.9977 FPR=0.0146 nodes=173 lateralF1=0.631 pwF1=0.998
+[k=12] union FPR=0.0161 false_alerts=14 | within-set max|rho|=0.999 pairs>=0.9=9
+   k=12 features ['w60_dports', 'w10_flows', 'Flow IAT Min', 'Fwd IAT Min', 'Pkt Len Mean', 'Pkt Len Max', 'Flow Duration', 'Flow IAT Mean', 'SYN Flag Cnt', 'Flow Pkts/s', 'Fwd Pkt Len Max', 'Fwd Pkt Len Mean']
+   k=12 pairs |rho|>=0.9 [('Pkt Len Mean', 'Pkt Len Max', 0.999), ('Pkt Len Mean', 'Fwd Pkt Len Max', 0.933), ('Pkt Len Mean', 'Fwd Pkt Len Mean', 0.934), ('Pkt Len Max', 'Fwd Pkt Len Max', 0.935), ('Pkt Len Max', 'Fwd Pkt Len Mean', 0.934), ('Flow Duration', 'Flow IAT Mean', 0.974), ('Flow Duration', 'Flow Pkts/s', 0.985), ('Flow IAT Mean', 'Flow Pkts/s', 0.998), ('Fwd Pkt Len Max', 'Fwd Pkt Len Mean', 0.999)]
+[k=15] T1: macroF1=1.000 recall=1.0000 FPR=0.0000 nodes=57
+[k=15] T2: macroF1=1.000 recall=1.0000 FPR=0.0000 nodes=21
+[k=15] T3: macroF1=0.921 recall=0.9994 FPR=0.0144 nodes=155 lateralF1=0.646 pwF1=0.998
+[k=15] union FPR=0.0144 false_alerts=14 | within-set max|rho|=0.999 pairs>=0.9=9
+[SAVED] outputs/tier_models_k12.pkl

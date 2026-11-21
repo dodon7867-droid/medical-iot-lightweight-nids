@@ -1,0 +1,19 @@
+[T1] nodes=65 classes=['Benign', 'MQTT attack'] -> c/models/k12_T1.h
+[T2] nodes=27 classes=['Benign', 'Server SSH guess'] -> c/models/k12_T2.h
+[T3] nodes=173 classes=['Benign', 'Device PW guess', 'Exfiltration', 'Lateral movement', 'Reconnaissance'] -> c/models/k12_T3.h
+make: Entering directory '/home/claude/repo/medical-iot-lightweight-nids/c'
+cc -O2 -I/usr/local/lib/python3.13/site-packages/emlearn -DTIER=T1 -include models/k12_T1.h check.c -o check_T1
+cc -O2 -I/usr/local/lib/python3.13/site-packages/emlearn -DTIER=T2 -include models/k12_T2.h check.c -o check_T2
+cc -O2 -I/usr/local/lib/python3.13/site-packages/emlearn -DTIER=T3 -include models/k12_T3.h check.c -o check_T3
+T1: agree 19999/20000 (100.00%)  ns_per_flow 2.0  (checksum 3493600)
+T2: agree 20000/20000 (100.00%)  ns_per_flow 1.4  (checksum 95000)
+T3: agree 20000/20000 (100.00%)  ns_per_flow 9.5  (checksum 14064600)
+cc -Os -c -I/usr/local/lib/python3.13/site-packages/emlearn -DTIER=T1 -include models/k12_T1.h model_only.c -o size_T1.o
+cc -Os -c -I/usr/local/lib/python3.13/site-packages/emlearn -DTIER=T2 -include models/k12_T2.h model_only.c -o size_T2.o
+cc -Os -c -I/usr/local/lib/python3.13/site-packages/emlearn -DTIER=T3 -include models/k12_T3.h model_only.c -o size_T3.o
+size size_T1.o size_T2.o size_T3.o
+   text	   data	    bss	    dec	    hex	filename
+    809	      0	      0	    809	    329	size_T1.o
+    412	      0	      0	    412	    19c	size_T2.o
+   1588	      0	      0	   1588	    634	size_T3.o
+make: Leaving directory '/home/claude/repo/medical-iot-lightweight-nids/c'

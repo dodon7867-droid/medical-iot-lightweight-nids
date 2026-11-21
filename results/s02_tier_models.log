@@ -1,0 +1,67 @@
+[INV] rows 554534 cols 84
+[INV] feature cols 77
+[INV] non-numeric []
+[INV] constant 10 ['Fwd PSH Flags', 'Fwd URG Flags', 'Fwd Byts/b Avg', 'Fwd Pkts/b Avg', 'Fwd Blk Rate Avg', 'Bwd Byts/b Avg', 'Bwd Pkts/b Avg', 'Bwd Blk Rate Avg', 'Init Fwd Win Byts', 'Fwd Seg Size Min']
+[INV] inf {}
+[INV] nan {}
+[INV] negative {'Flow Duration': 55, 'Flow Byts/s': 11, 'Flow Pkts/s': 55, 'Flow IAT Mean': 55, 'Flow IAT Max': 45, 'Flow IAT Min': 374, 'Fwd IAT Min': 11, 'Bwd IAT Tot': 60, 'Bwd IAT Mean': 60, 'Bwd IAT Max': 53, 'Bwd IAT Min': 87, 'Init Fwd Win Byts': 554534, 'Init Bwd Win Byts': 7301}
+[INV] duplicate full rows 0
+[INV] label counts {'Reconnaissance': 401683, 'Initial access': 102090, 'Exfiltration': 25915, 'Lateral movement': 12498, 'Benign': 12348}
+[INV] protocol counts {6: 547233, 17: 5813, 0: 1488}
+[RELABEL] lateral pivot->external kept benign (exception) 0
+[CLEAN] negative-time rows 374 by y {'Initial access': 166, 'Reconnaissance': 134, 'Benign': 71, 'Exfiltration': 3}
+[RELABEL] drop protocol0 1488 attacker-bg 385
+[TS] NaT 0 range 2022-05-31 00:36:00 2025-04-24 16:12:27
+[WIN] done 1s
+[CLEAN] drop attacker-bg 385 drop negative-time 370
+[DATA] after drops 552291
+y                 Benign  Exfiltration  Initial access  Lateral movement  Reconnaissance
+cap                                                                                     
+Benign             11282             0               0                 0               0
+Exfiltration        6993         18792               0                 0               0
+Initial access      4148             0           97638                 0               0
+Lateral movement   11193             0               0              1046               0
+Reconnaissance      9587             0               0                 0          391612
+[SPLIT] train 386609 test 165682
+[SPLIT] test per class {'Reconnaissance': 117483, 'Initial access': 29291, 'Benign': 12958, 'Exfiltration': 5637, 'Lateral movement': 313}
+[FEAT] constant after cleaning 10 ['Fwd PSH Flags', 'Fwd URG Flags', 'Fwd Byts/b Avg', 'Fwd Pkts/b Avg', 'Fwd Blk Rate Avg', 'Bwd Byts/b Avg', 'Bwd Pkts/b Avg', 'Bwd Blk Rate Avg', 'Init Fwd Win Byts', 'Fwd Seg Size Min']
+[FEAT] identity removed ['Protocol', 'Init Bwd Win Byts'] -> FULL 65
+[FEAT] LIGHT 28 missing/const []
+[LOAD] done 10s
+labels {'Reconnaissance': 391612, 'MQTT attack': 95498, 'Benign': 43203, 'Exfiltration': 18792, 'Device PW guess': 1794, 'Lateral movement': 1046, 'Server SSH guess': 346}
+test counts {'Reconnaissance': 117483, 'MQTT attack': 28649, 'Benign': 12958, 'Exfiltration': 5637, 'Device PW guess': 520, 'Lateral movement': 313, 'Server SSH guess': 122}
+
+[T1 life-support MQTT, balanced] nodes=57 used=17 macroF1=0.987 attack_recall=1.0000 benign_FPR=0.0343 false_alerts=2
+   F1 {'Benign': (0.983, 12958), 'MQTT attack': (0.992, 28649)}
+
+[T1 life-support MQTT, benign x10] nodes=51 used=15 macroF1=0.995 attack_recall=1.0000 benign_FPR=0.0127 false_alerts=1
+   F1 {'Benign': (0.994, 12958), 'MQTT attack': (0.997, 28649)}
+
+[T2 clinical-support server SSH, balanced] nodes=13 used=6 macroF1=1.000 attack_recall=1.0000 benign_FPR=0.0000 false_alerts=0
+   F1 {'Benign': (1.0, 12958), 'Server SSH guess': (1.0, 122)}
+
+[T2 clinical-support server SSH, benign x10] nodes=11 used=5 macroF1=1.000 attack_recall=1.0000 benign_FPR=0.0000 false_alerts=0
+   F1 {'Benign': (1.0, 12958), 'Server SSH guess': (1.0, 122)}
+
+[T3 CCTV chain, balanced] nodes=149 used=23 macroF1=0.920 attack_recall=0.9993 benign_FPR=0.0146 false_alerts=14
+   F1 {'Benign': (0.989, 12958), 'Device PW guess': (0.998, 520), 'Exfiltration': (0.973, 5637), 'Lateral movement': (0.643, 313), 'Reconnaissance': (0.998, 117483)}
+
+[T3 CCTV chain, attack x10] nodes=197 used=30 macroF1=0.847 attack_recall=0.9992 benign_FPR=0.0725 false_alerts=30
+   F1 {'Benign': (0.958, 12958), 'Device PW guess': (0.925, 520), 'Exfiltration': (0.978, 5637), 'Lateral movement': (0.377, 313), 'Reconnaissance': (0.998, 117483)}
+
+[T3 CCTV chain, benign x10] nodes=241 used=26 macroF1=0.930 attack_recall=0.9980 benign_FPR=0.0034 false_alerts=5
+   F1 {'Benign': (0.989, 12958), 'Device PW guess': (0.996, 520), 'Exfiltration': (0.983, 5637), 'Lateral movement': (0.686, 313), 'Reconnaissance': (0.998, 117483)}
+[THR T3 tree] share of flows with 0.05<p<0.95 = 0.0098
+   t=0.09 recall=0.9998 FPR=0.0816
+   t=0.50 recall=0.9993 FPR=0.0146
+   t=0.90 recall=0.9992 FPR=0.0091
+[THR T1 tree benign x10] share of flows with 0.05<p<0.95 = 0.0000
+   t=0.09 recall=1.0000 FPR=0.0127
+   t=0.50 recall=1.0000 FPR=0.0127
+   t=0.90 recall=1.0000 FPR=0.0127
+[THR T2 tree balanced] share of flows with 0.05<p<0.95 = 0.0000
+   t=0.09 recall=1.0000 FPR=0.0000
+   t=0.50 recall=1.0000 FPR=0.0000
+   t=0.90 recall=1.0000 FPR=0.0000
+[UNION with T2 balanced] FPR=0.0273 per=[0.0127, 0.0, 0.0146] false_alerts=14
+[UNION with T2 benign x10] FPR=0.0273 per=[0.0127, 0.0, 0.0146] false_alerts=14

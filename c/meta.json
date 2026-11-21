@@ -1,0 +1,35 @@
+{
+ "n_rows": 20000,
+ "n_features": 12,
+ "features": [
+  "w60_dports",
+  "w10_flows",
+  "Flow IAT Min",
+  "Fwd IAT Min",
+  "Pkt Len Mean",
+  "Pkt Len Max",
+  "Flow Duration",
+  "Flow IAT Mean",
+  "SYN Flag Cnt",
+  "Flow Pkts/s",
+  "Fwd Pkt Len Max",
+  "Fwd Pkt Len Mean"
+ ],
+ "classes": {
+  "T1": [
+   "Benign",
+   "MQTT attack"
+  ],
+  "T2": [
+   "Benign",
+   "Server SSH guess"
+  ],
+  "T3": [
+   "Benign",
+   "Device PW guess",
+   "Exfiltration",
+   "Lateral movement",
+   "Reconnaissance"
+  ]
+ }
+}

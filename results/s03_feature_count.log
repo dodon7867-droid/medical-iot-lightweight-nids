@@ -1,0 +1,99 @@
+[INV] rows 554534 cols 84
+[INV] feature cols 77
+[INV] non-numeric []
+[INV] constant 10 ['Fwd PSH Flags', 'Fwd URG Flags', 'Fwd Byts/b Avg', 'Fwd Pkts/b Avg', 'Fwd Blk Rate Avg', 'Bwd Byts/b Avg', 'Bwd Pkts/b Avg', 'Bwd Blk Rate Avg', 'Init Fwd Win Byts', 'Fwd Seg Size Min']
+[INV] inf {}
+[INV] nan {}
+[INV] negative {'Flow Duration': 55, 'Flow Byts/s': 11, 'Flow Pkts/s': 55, 'Flow IAT Mean': 55, 'Flow IAT Max': 45, 'Flow IAT Min': 374, 'Fwd IAT Min': 11, 'Bwd IAT Tot': 60, 'Bwd IAT Mean': 60, 'Bwd IAT Max': 53, 'Bwd IAT Min': 87, 'Init Fwd Win Byts': 554534, 'Init Bwd Win Byts': 7301}
+[INV] duplicate full rows 0
+[INV] label counts {'Reconnaissance': 401683, 'Initial access': 102090, 'Exfiltration': 25915, 'Lateral movement': 12498, 'Benign': 12348}
+[INV] protocol counts {6: 547233, 17: 5813, 0: 1488}
+[RELABEL] lateral pivot->external kept benign (exception) 0
+[CLEAN] negative-time rows 374 by y {'Initial access': 166, 'Reconnaissance': 134, 'Benign': 71, 'Exfiltration': 3}
+[RELABEL] drop protocol0 1488 attacker-bg 385
+[TS] NaT 0 range 2022-05-31 00:36:00 2025-04-24 16:12:27
+[WIN] done 1s
+[CLEAN] drop attacker-bg 385 drop negative-time 370
+[DATA] after drops 552291
+y                 Benign  Exfiltration  Initial access  Lateral movement  Reconnaissance
+cap                                                                                     
+Benign             11282             0               0                 0               0
+Exfiltration        6993         18792               0                 0               0
+Initial access      4148             0           97638                 0               0
+Lateral movement   11193             0               0              1046               0
+Reconnaissance      9587             0               0                 0          391612
+[SPLIT] train 386609 test 165682
+[SPLIT] test per class {'Reconnaissance': 117483, 'Initial access': 29291, 'Benign': 12958, 'Exfiltration': 5637, 'Lateral movement': 313}
+[FEAT] constant after cleaning 10 ['Fwd PSH Flags', 'Fwd URG Flags', 'Fwd Byts/b Avg', 'Fwd Pkts/b Avg', 'Fwd Blk Rate Avg', 'Bwd Byts/b Avg', 'Bwd Pkts/b Avg', 'Bwd Blk Rate Avg', 'Init Fwd Win Byts', 'Fwd Seg Size Min']
+[FEAT] identity removed ['Protocol', 'Init Bwd Win Byts'] -> FULL 65
+[FEAT] LIGHT 28 missing/const []
+[LOAD] done 10s
+RF importance ranking ['w10_flows', 'w60_flows', 'w60_dports', 'Flow IAT Min', 'Fwd IAT Min', 'Bwd IAT Min', 'Flow Pkts/s', 'w60_dsts', 'Flow IAT Mean', 'Tot Bwd Pkts', 'Bwd Header Len', 'Flow Duration', 'Flow IAT Max', 'FIN Flag Cnt', 'Tot Fwd Pkts', 'Fwd Header Len', 'Bwd Pkt Len Max', 'TotLen Bwd Pkts', 'TotLen Fwd Pkts', 'Fwd Pkt Len Mean', 'Pkt Len Max', 'Pkt Len Mean', 'Bwd Pkt Len Mean', 'Flow Byts/s', 'Fwd Pkt Len Max', 'SYN Flag Cnt', 'ACK Flag Cnt', 'RST Flag Cnt', 'Bwd Pkt Len Min', 'Fwd Pkt Len Min', 'Pkt Len Min', 'PSH Flag Cnt']
+
+[RF all 65+4] n=69
+   T1: macroF1=1.0 recall=1.0 FPR=0.001 nodes=None
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=None
+   T3: macroF1=0.972 recall=0.9997 FPR=0.0035 nodes=None
+   T3 per-class {'Benign': np.float64(0.997), 'Device PW guess': np.float64(0.999), 'Exfiltration': np.float64(0.994), 'Lateral movement': np.float64(0.869), 'Reconnaissance': np.float64(1.0)}
+   union FPR=0.0039 false_alerts=8
+
+[Tree all 65+4] n=69
+   T1: macroF1=0.995 recall=1.0 FPR=0.0127 nodes=41
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=15
+   T3: macroF1=0.922 recall=0.9978 FPR=0.0212 nodes=163
+   T3 per-class {'Benign': np.float64(0.979), 'Device PW guess': np.float64(0.997), 'Exfiltration': np.float64(0.985), 'Lateral movement': np.float64(0.652), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0340 false_alerts=13
+
+[Tree top-32 (RF ranking)] n=32
+   T1: macroF1=0.995 recall=1.0 FPR=0.0127 nodes=51
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=13
+   T3: macroF1=0.92 recall=0.9993 FPR=0.0146 nodes=149
+   T3 per-class {'Benign': np.float64(0.989), 'Device PW guess': np.float64(0.998), 'Exfiltration': np.float64(0.973), 'Lateral movement': np.float64(0.643), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0273 false_alerts=14
+
+[Tree top-20 (RF ranking)] n=20
+   T1: macroF1=1.0 recall=1.0 FPR=0.0002 nodes=61
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=19
+   T3: macroF1=0.908 recall=0.9978 FPR=0.0273 nodes=155
+   T3 per-class {'Benign': np.float64(0.976), 'Device PW guess': np.float64(0.998), 'Exfiltration': np.float64(0.981), 'Lateral movement': np.float64(0.587), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0276 false_alerts=17
+
+[Tree top-15 (RF ranking)] n=15
+   T1: macroF1=1.0 recall=1.0 FPR=0.001 nodes=63
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=19
+   T3: macroF1=0.861 recall=0.9977 FPR=0.0715 nodes=159
+   T3 per-class {'Benign': np.float64(0.952), 'Device PW guess': np.float64(0.999), 'Exfiltration': np.float64(0.992), 'Lateral movement': np.float64(0.366), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0725 false_alerts=22
+   features ['w10_flows', 'w60_flows', 'w60_dports', 'Flow IAT Min', 'Fwd IAT Min', 'Bwd IAT Min', 'Flow Pkts/s', 'w60_dsts', 'Flow IAT Mean', 'Tot Bwd Pkts', 'Bwd Header Len', 'Flow Duration', 'Flow IAT Max', 'FIN Flag Cnt', 'Tot Fwd Pkts']
+
+[Tree top-12 (RF ranking)] n=12
+   T1: macroF1=1.0 recall=1.0 FPR=0.0011 nodes=63
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=19
+   T3: macroF1=0.861 recall=0.9977 FPR=0.0717 nodes=159
+   T3 per-class {'Benign': np.float64(0.952), 'Device PW guess': np.float64(0.999), 'Exfiltration': np.float64(0.992), 'Lateral movement': np.float64(0.366), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0728 false_alerts=21
+   features ['w10_flows', 'w60_flows', 'w60_dports', 'Flow IAT Min', 'Fwd IAT Min', 'Bwd IAT Min', 'Flow Pkts/s', 'w60_dsts', 'Flow IAT Mean', 'Tot Bwd Pkts', 'Bwd Header Len', 'Flow Duration']
+
+[Tree top-10 (RF ranking)] n=10
+   T1: macroF1=1.0 recall=1.0 FPR=0.0005 nodes=77
+   T2: macroF1=1.0 recall=1.0 FPR=0.0 nodes=21
+   T3: macroF1=0.863 recall=0.9975 FPR=0.0651 nodes=173
+   T3 per-class {'Benign': np.float64(0.954), 'Device PW guess': np.float64(0.999), 'Exfiltration': np.float64(0.991), 'Lateral movement': np.float64(0.373), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0655 false_alerts=25
+   features ['w10_flows', 'w60_flows', 'w60_dports', 'Flow IAT Min', 'Fwd IAT Min', 'Bwd IAT Min', 'Flow Pkts/s', 'w60_dsts', 'Flow IAT Mean', 'Tot Bwd Pkts']
+
+[Tree top-8 (RF ranking)] n=8
+   T1: macroF1=0.998 recall=1.0 FPR=0.0067 nodes=77
+   T2: macroF1=0.988 recall=0.9918 FPR=0.0004 nodes=25
+   T3: macroF1=0.864 recall=0.9974 FPR=0.0603 nodes=197
+   T3 per-class {'Benign': np.float64(0.957), 'Device PW guess': np.float64(0.982), 'Exfiltration': np.float64(0.991), 'Lateral movement': np.float64(0.391), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0668 false_alerts=28
+   features ['w10_flows', 'w60_flows', 'w60_dports', 'Flow IAT Min', 'Fwd IAT Min', 'Bwd IAT Min', 'Flow Pkts/s', 'w60_dsts']
+
+[Tree top-6 (RF ranking)] n=6
+   T1: macroF1=0.992 recall=1.0 FPR=0.0216 nodes=83
+   T2: macroF1=0.98 recall=1.0 FPR=0.0008 nodes=27
+   T3: macroF1=0.858 recall=0.997 FPR=0.0783 nodes=223
+   T3 per-class {'Benign': np.float64(0.945), 'Device PW guess': np.float64(0.981), 'Exfiltration': np.float64(0.981), 'Lateral movement': np.float64(0.384), 'Reconnaissance': np.float64(0.998)}
+   union FPR=0.0998 false_alerts=36
+   features ['w10_flows', 'w60_flows', 'w60_dports', 'Flow IAT Min', 'Fwd IAT Min', 'Bwd IAT Min']
