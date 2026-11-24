@@ -30,6 +30,7 @@ src/s03_feature_count.py    many features vs few features (69 → 32 → top-k)
 src/s04_correlation_filter.py  Spearman correlation filter vs tree importance (CCTV tree)
 src/s05_final_models.py     final 12 shared features, saves the three tier trees
 src/s06_export_c.py         export trees to C (emlearn, float)
+src/s07_eda.py              EDA figures (PNG + the plotted numbers as CSV) into results/eda/
 c/                          C check harness (agreement, latency, code size) and exported trees
 results/                    logs of our run
 data/README.md              where to download the dataset
@@ -49,6 +50,21 @@ pip install -r requirements.txt
 
 Each stage can also run alone, e.g. `python3 src/s05_final_models.py data/MedSec-25.csv`.
 Stage 6 needs stage 5's output, and `make -C c check size` needs a C compiler.
+On Python 3.12, emlearn needs `setuptools` (it imports `distutils`); it is in `requirements.txt`.
+Keep the clone inside the WSL home folder, not under `/mnt/c`: Windows file times confuse `make`
+(if you see clock-skew warnings, run `make -B -C c check size`).
+
+## EDA figures
+
+`python3 src/s07_eda.py data/MedSec-25.csv` draws five figures into `results/eda/`, each with a CSV of the plotted numbers:
+
+| File | What it shows |
+|---|---|
+| `eda1_relabel` | share of benign flows inside each attack capture (lateral movement capture: 91.5%), the reason we relabel per flow |
+| `eda2_classes` | flows per label after relabel, log axis, colored by device tier (largest/smallest = 1,132×) |
+| `eda3_windows` | `w60_dports` and `w10_flows` by stage (box 25–75%, whiskers 5–95%, log axis) |
+| `eda4_timeline` | flows per minute in each capture, train (first 70%) vs test (last 30%); the benign capture is from 2022, the attack captures from 2025 |
+| `eda5_columns` | how 84 CSV columns become the final 12 features |
 
 ## Preprocessing
 
@@ -79,7 +95,8 @@ Final models, 12 shared features (from `results/s05_final_models.log`):
 | T3 | 173 | 0.918 | 99.77% | 1.46% |
 
 All three together: benign FPR 1.61%, 14 false alerts over about 2.4 hours of benign test traffic.
-C export: 59,999 of 60,000 test predictions match scikit-learn; code size 2,809 bytes (809 + 412 + 1,588) (see `results/s06_export_c.log`).
+C export: all 60,000 test predictions match scikit-learn; code size 2,777 bytes (809 + 412 + 1,556) (see `results/s06_export_c.log`).
+emlearn writes each split as `x < threshold` while scikit-learn uses `x <= threshold`; many of our thresholds are whole numbers (flow counts), so `s06_export_c.py` rewrites the comparison to `<=`.
 
 Many vs few features (union benign FPR of the three tiers, `results/s03`–`s05` logs):
 

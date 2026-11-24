@@ -1,0 +1,40 @@
+[EDA1] benign share in attack captures
+ capture  benign_flows  all_flows  benign_pct
+   정찰 녹화          9587     401199    2.389587
+초기 침투 녹화          4148     101786    4.075217
+내부 확산 녹화         11193      12239   91.453550
+   유출 녹화          6993      25785   27.120419
+[SAVED] results/eda/eda1_relabel.png
+[EDA2] flows per label
+           label            label_ko tier  flows
+          Benign                  정상    -  43203
+  Reconnaissance                  정찰   T3 391612
+     MQTT attack 초기 침투 · MQTT 서비스 공격   T1  95498
+Server SSH guess   초기 침투 · 서버 SSH 대입   T2    346
+ Device PW guess  초기 침투 · 기기 비밀번호 대입   T3   1794
+Lateral movement               내부 확산   T3   1046
+    Exfiltration                  유출   T3  18792
+[EDA2] largest/smallest = 391,612/346 = 1132x
+[SAVED] results/eda/eda2_classes.png
+[EDA3] window features by stage
+   feature stage  flows     p5     p25  median     p75     p95
+w60_dports    정상  43203    1.0     1.0     2.0     4.0    11.0
+w60_dports    정찰 391612 1301.0 10521.0 21370.0 22089.0 46616.0
+w60_dports 초기 침투  97638    2.0     2.0     3.0     3.0   665.0
+w60_dports 내부 확산   1046    3.0     4.0     5.0     6.0    15.0
+w60_dports    유출  18792    1.0     1.0     1.0     2.0     6.0
+ w10_flows    정상  43203    2.0     7.0    38.0    52.0    73.0
+ w10_flows    정찰 391612 1000.0 11300.0 13838.0 15372.0 17680.0
+ w10_flows 초기 침투  97638  107.0   707.0   873.0   965.0  1068.0
+ w10_flows 내부 확산   1046    2.0     4.0     5.0    14.0    38.0
+ w10_flows    유출  18792   12.0    66.0    88.0    93.0   180.0
+[SAVED] results/eda/eda3_windows.png
+[EDA4] captures
+         capture               start  minutes  flows  train   test
+          Benign 2022-05-31 00:36:00      347  11282   7898   3384
+  Reconnaissance 2025-04-15 13:46:01       89 401199 280840 120359
+  Initial access 2025-04-17 15:13:20       47 101786  71251  30535
+    Exfiltration 2025-04-23 10:52:26     1486  25785  18051   7734
+Lateral movement 2025-04-24 15:23:35       49  12239   8569   3670
+[SAVED] results/eda/eda4_timeline.png
+[SAVED] results/eda/eda5_columns.png

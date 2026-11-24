@@ -9,3 +9,4 @@ for s in s01_baselines s02_tier_models s03_feature_count s04_correlation_filter 
 done
 python3 src/s06_export_c.py | tee results/s06_export_c.log
 make -C c check size | tee -a results/s06_export_c.log
+python3 src/s07_eda.py "$CSV" | tee results/s07_eda.log   # EDA figures -> results/eda/

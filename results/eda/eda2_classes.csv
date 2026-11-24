@@ -1,0 +1,8 @@
+label,label_ko,tier,flows
+Benign,정상,-,43203
+Reconnaissance,정찰,T3,391612
+MQTT attack,초기 침투 · MQTT 서비스 공격,T1,95498
+Server SSH guess,초기 침투 · 서버 SSH 대입,T2,346
+Device PW guess,초기 침투 · 기기 비밀번호 대입,T3,1794
+Lateral movement,내부 확산,T3,1046
+Exfiltration,유출,T3,18792
