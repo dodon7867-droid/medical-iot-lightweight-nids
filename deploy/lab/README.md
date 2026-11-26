@@ -1,79 +1,116 @@
-# 실습망 키트
+# 가상 병원망 실습 키트
 
-4명이 각자 PC에서 **똑같은** 가상 병원망(공유기 1대 + 기기 VM 6대)을 띄우기 위한 묶음이다.
-서로의 PC를 쓰지 않는다. 각자 띄운 실습망은 완전히 따로 돌고, 서로 영향을 주지 않는다.
+공유기 1대와 기기 VM 6대를 PC 한 대의 WSL2 안에서 실행한다. 조원마다 같은 키트를 받아 독립된 망을 사용한다.
 
-| 구성 | 위치 |
+## 파일 위치
+
+| 자료 | 배포 위치 |
 |---|---|
-| 스크립트 (`lab_*.sh`, `lab.conf`) | 이 폴더 (레포) |
-| 디스크 묶음 `lab-vN.tar.gz` (`openwrt.img` + 기기 `.qcow2`) | 팀 드라이브 `lab/` 폴더 |
-| 공유기·VM 계정 비밀번호 | 메신저 (레포에 적지 않는다) |
+| lab-v1.tar.gz | 팀 드라이브의 lab/ 폴더 |
+| lab_*.sh, common.sh, lab.conf, README.md | GitHub deploy/lab/ |
+| BUILD.md, TOPOLOGY.md | GitHub deploy/lab/ — 제작 방법·실제 IP 구성도 |
+| devices.csv | GitHub deploy/ — 기기 등급표 |
+| 계정표 | 팀 메신저로 별도 전달 |
 
-디스크는 용량이 크고 비밀번호가 들어 있어 **레포에 올리지 않는다.**
+키트 압축에는 공유기 이미지, 기기 디스크 6개, lab.conf, VERSION, SHA256SUMS가 들어 있다. 실행 스크립트는 GitHub에서 받는다. 이미지·디스크·계정표는 GitHub에 올리지 않는다.
 
-## 처음 한 번: 환경 준비 (Windows는 WSL2 Ubuntu 24.04 안에서)
+## 처음 한 번: 환경 준비
+
+Windows에서는 WSL2 Ubuntu 24.04 안에서 모든 VM을 띄운다. 호스트 여유 메모리는 약 1.5GB 이상을 권장한다.
 
 ```bash
-# PowerShell(관리자): wsl --install -d Ubuntu-24.04
-sudo apt update && sudo apt install -y qemu-system-x86 qemu-utils socat
-ls -l /dev/kvm            # 없으면 BIOS에서 가상화(VT-x/AMD-V)를 켠다
-sudo chmod 666 /dev/kvm   # 권한 오류가 나면 (WSL을 다시 켤 때마다)
+# WSL이 없다면 Windows PowerShell에서:
+# wsl --install -d Ubuntu-24.04
+# 아래 명령은 Ubuntu에서 실행
+sudo apt update
+sudo apt install -y git qemu-system-x86 qemu-utils socat
+ls -l /dev/kvm
 ```
 
-`/dev/kvm`의 그룹이 `kvm`이 아니라 `systemd-resolve` 등으로 나오면 kvm 그룹에 들어 있어도 권한 오류가 난다. 위 `chmod`로 해결한다.
+KVM 권한 오류가 있을 때만 아래 명령을 실행한다. `newgrp`로 열린 셸에서 계속한다.
+
+```bash
+sudo groupadd -f kvm
+sudo chgrp kvm /dev/kvm
+sudo chmod 660 /dev/kvm
+sudo usermod -aG kvm "$USER"
+newgrp kvm
+```
+
+`/dev/kvm`이 없으면 BIOS 가상화·WSL2 설정을 확인한다. KVM이 없으면 부팅이 매우 느려질 수 있다.
 
 ## 키트 받기
 
+드라이브에서 받은 압축 파일이 있는 Ubuntu 폴더에서 실행한다.
+
 ```bash
 mkdir -p ~/nids-lab
-tar -xzf lab-v1.tar.gz -C ~/nids-lab        # ~/nids-lab/lab-v1/ 이 생긴다
-cd ~/nids-lab/lab-v1 && sha256sum -c SHA256SUMS   # 전부 OK여야 한다
+tar -xzf lab-v1.tar.gz -C ~/nids-lab
+cd ~/nids-lab/lab-v1
+sha256sum -c SHA256SUMS
 cat VERSION
 ```
 
-## 쓰기
+모든 파일이 OK여야 한다. 각 qcow2는 독립 디스크이므로 base.qcow2가 필요 없다.
+
+## 실행
+
+레포는 Ubuntu 홈 폴더 아래에 받는다. 이미 받았다면 해당 레포의 deploy/lab 폴더로 이동한다.
 
 ```bash
-cd <레포>/deploy/lab
-chmod +x *.sh               # 깃허브 웹으로 올린 파일은 실행 권한이 빠져 있다 (처음 한 번)
-./lab_up.sh                  # 공유기 + 기기 VM 전부 (백그라운드)
-./lab_console.sh             # 실행 상태 보기
-./lab_console.sh camera      # 카메라 콘솔. Enter 한 번, 빠져나오기 Ctrl+]
-./lab_down.sh                # 전부 끄기
+# 처음 받는 경우:
+git clone https://github.com/dodon7867-droid/medical-iot-lightweight-nids.git ~/medical-iot-lightweight-nids
+cd ~/medical-iot-lightweight-nids/deploy/lab
+chmod +x *.sh
+./lab_up.sh
+./lab_console.sh
+./lab_console.sh admin
+./lab_down.sh
 ```
 
-- 공유기 관리: `ssh -p 2222 root@127.0.0.1`, 대시보드: `http://127.0.0.1:8080/`
-- 일부만: `./lab_up.sh router camera attacker`
-- 다른 버전: `LAB_DIR=~/nids-lab/lab-v2 ./lab_up.sh`
-- 녹화(6번): `PCAP=~/nids-lab/pcap/run1 ./lab_up.sh` → 공유기 구역 NIC 5개(`admin`, `wan`, `cctv`, `clinic`, `monitor`)의 패킷이 호스트에 `.pcap`으로 저장된다. 공유기를 끄면 파일이 닫힌다.
+콘솔에서 Enter를 누르고 별도로 받은 계정으로 로그인한다. Ctrl+]는 콘솔 연결만 끊는다. VM은 `lab_down.sh`로 종료한다.
 
-**기본은 `-snapshot` 모드다.** VM 안에서 바뀐 내용(설정, 로그, 공격 흔적)은 끄면 버려지고, 매번 키트 상태 그대로 시작한다. 그래서 실험을 몇 번 반복해도 같은 조건이 된다.
-공유기에 올리는 우리 코드(대응 모듈, 추출기, 대시보드)는 부팅 후 `scp -O -P 2222`로 복사하는 스크립트로 올린다. VM 안에서 손으로 고친 내용은 남지 않는다.
+- 공유기 SSH: `ssh -p 2222 root@127.0.0.1`.
+- 공유기 웹 관리: `http://127.0.0.1:8080/`. 관제 대시보드는 포함하지 않는다.
+- 일부만 시작: `./lab_up.sh router camera attacker`.
+- 다른 키트 위치: `LAB_DIR=/경로/lab-v1 ./lab_up.sh`.
+- 기본은 snapshot 모드다. 종료하면 VM 안의 변경이 사라진다. 원본을 수정할 때만 `PERSIST=1`을 사용한다.
 
-## 키트를 고치고 배포하기 (VM을 만든 사람만)
+## 연결 확인
+
+admin 콘솔에서:
+
+```sh
+ping -c 2 10.0.30.21
+ping -c 2 10.0.20.10
+ping -c 2 10.0.10.33
+nc -zv -w 3 10.0.20.10 22
+wget -qO- http://10.0.30.21/stream.bin | wc -c
+mosquitto_sub -h 10.0.10.33 -t ward1/bed3/hr -C 3
+```
+
+영상 파일은 1048576바이트, MQTT 합성 신호는 3개가 출력되어야 한다.
+
+attacker 콘솔에서:
+
+```sh
+nc -zv -w 3 10.0.30.21 21
+nc -zv -w 3 10.0.30.21 23
+nc -zv -w 3 10.0.30.21 80
+nc -zv -w 3 10.0.20.10 22
+```
+
+카메라 포트 3개는 성공, 진료 서버 22는 실패해야 한다. 공유기에서 `tcpdump -nn -i eth3`를 켜고 admin에서 서버로 ping하면 구역 간 패킷이 보여야 한다.
+
+5개 구역은 루프백 멀티캐스트로 연결하며 물리 NIC에 브리지하지 않는다. 기기 VM에는 인터넷용 NIC가 없다. 공유기 관리 NIC는 restrict=on이며 기본 경로가 없다. WAN에서 내부로 새로 시작하는 연결은 카메라 TCP 21·23·80만 허용한다. 구역 간 통신은 NAT 없이 공유기를 거친다.
+
+## 수정과 다음 버전 배포
 
 ```bash
-# 원본 폴더(~/nids-lab/build)에 openwrt.img와 lab.conf에 적힌 디스크를 둔다
-PERSIST=1 LAB_DIR=~/nids-lab/build ./lab_up.sh camera   # 바뀐 내용이 디스크에 저장됨
-./lab_console.sh camera   # 고치기
-./lab_down.sh camera      # 저장 모드는 정상 종료 신호로 끈다
-SRC=~/nids-lab/build ./lab_pack.sh v2 "카메라에 FTP 계정 추가"
-# → ~/nids-lab/dist/lab-v2.tar.gz 를 드라이브 lab/ 에 올리고 팀에 알린다
+PERSIST=1 LAB_DIR=~/nids-lab/build ./lab_up.sh camera
+./lab_console.sh camera
+./lab_down.sh camera
+SRC=~/nids-lab/build ./lab_pack.sh v2 "변경 내용"
 ```
 
-- `lab_pack.sh`는 `base.qcow2`에 기댄 복사본 디스크를 독립 파일로 합친다. 받는 사람은 base 없이 연다.
-- 버전은 올리기만 한다(`v1`, `v2`, …). 누가 어느 버전으로 실험했는지 결과 파일에 적는다.
-- 기기를 추가하거나 MAC·구역을 바꾸면 `lab.conf`도 같이 고친다. 키트 안에 들어간 `lab.conf`가 우선 쓰인다.
-- 공유기 NIC 구성은 `deploy/openwrt/run_router.sh`와 같아야 한다.
-
-## 측정은 한 PC에서
-
-탐지·차단 시간, CPU·메모리처럼 PC 사양에 따라 달라지는 수치(11번 통합 시험, 발표 수치)는 **정해 둔 한 PC**에서만 잰다. 다른 PC는 개발과 확인용이다.
-
-## 알아 둘 것
-
-- 공유기와 기기 VM은 **같은 PC의 같은 WSL 안에서** 띄워야 연결된다(`localaddr=127.0.0.1`). 다른 PC의 VM과는 연결되지 않는다.
-- 메모리 여유 약 1.5GB가 필요하다(공유기 128MB + 기기 192~256MB × 6).
-- `remote`는 외부 정상 사용자 VM이다. IP 두 개로 원장 휴대폰 원격 보기(203.0.113.50)와 설치업체 원격 점검(203.0.113.80)을 만든다(6번).
-- 이 가상 스위치는 자기가 보낸 프레임도 되돌려 받는다. 캡처할 때 공유기 MAC(`52:54:00:aa:00:0X`)에서 온 프레임은 거른다.
-- 기기 VM 콘솔이 안 보이면 VM의 커널 옵션에 `console=ttyS0`이 없는 것이다. 만들 때 Alpine의 `/etc/update-extlinux.conf`에서 `default_kernel_opts`에 `console=ttyS0,115200`을 넣고 `update-extlinux`를 실행한다.
+새 키트는 `~/nids-lab/dist/lab-v2.tar.gz`에 생긴다. 버전은 올리기만 하고 조원에게 같은 버전을 전달한다. 다른 조원 PC에서도 위 연결 확인을 수행하고 결과를 남긴다.

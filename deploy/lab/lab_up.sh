@@ -69,4 +69,4 @@ while read -r name mem port mac disk; do
     -netdev socket,id=n0,mcast=$MC:$port,localaddr=$LA -device e1000,netdev=n0,mac=$mac
 done < <(devices)
 
-echo "끝. 공유기 관리: ssh -p 2222 root@127.0.0.1 · 대시보드: http://127.0.0.1:8080/ · 끄기: ./lab_down.sh"
+echo "끝. 공유기 관리: ssh -p 2222 root@127.0.0.1 · 공유기 웹 관리: http://127.0.0.1:8080/ · 끄기: ./lab_down.sh"

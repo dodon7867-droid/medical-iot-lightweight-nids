@@ -1,0 +1,14 @@
+name,ip,zone,tier,never_block
+router-admin,10.0.40.1,admin,0,true
+router-wan,203.0.113.1,wan,0,true
+router-camera,10.0.30.1,cctv,0,true
+router-clinic,10.0.20.1,clinic,0,true
+router-monitor,10.0.10.1,monitor,0,true
+router-management,10.0.2.15,mgmt,0,true
+admin,10.0.40.10,admin,0,true
+camera,10.0.30.21,cctv,3,false
+server,10.0.20.10,clinic,2,true
+monitor,10.0.10.33,monitor,1,true
+attacker,203.0.113.7,wan,0,false
+remote-owner,203.0.113.50,wan,0,false
+remote-vendor,203.0.113.80,wan,0,false
